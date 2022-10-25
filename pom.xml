@@ -28,6 +28,13 @@
           <type>pom</type>
           <scope>import</scope>
       </dependency>
+          <dependency>
+        <groupId>org.jboss.bom</groupId>
+        <artifactId>jboss-eap-jakartaee8</artifactId>
+        <version>7.4.7.GA</version>
+        <type>pom</type>
+        <scope>import</scope>
+    </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -120,6 +127,26 @@
                 <filename>${project.build.finalName}.war</filename>
             </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.wildfly.plugins</groupId>
+          <artifactId>wildfly-jar-maven-plugin</artifactId>
+          <version>${bootable.jar.maven.plugin.version}</version>
+          <configuration>
+            <feature-pack-location>org.jboss.eap:wildfly-galleon-pack:${jboss.xp.galleon.feature.pack.version}</feature-pack-location>
+            <layers>
+                <layer>jaxrs-server</layer>
+                <layer>microprofile-platform</layer>
+            </layers>
+            <cloud/>
+          </configuration>
+          <executions>
+              <execution>
+                  <goals>
+                      <goal>package</goal>
+                  </goals>
+              </execution>
+          </executions>
+        </plugin>        
       </plugins>
     </pluginManagement>
   </build>
