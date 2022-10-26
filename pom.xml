@@ -16,6 +16,9 @@
     <java.version>11</java.version>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
+    <bootable.jar.maven.plugin.version>6.1.3.Final-redhat-00001</bootable.jar.maven.plugin.version>
+    <jboss.xp.galleon.feature.pack.version>4.0.0.GA-redhat-00007</jboss.xp.galleon.feature.pack.version>
+    <version.jkube.maven.plugin>1.9.1</version.jkube.maven.plugin>
   </properties>
 
   <dependencyManagement>
@@ -86,71 +89,106 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <finalName>microprofile</finalName>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-      <plugins>
-        <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging -->
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-war-plugin</artifactId>
-          <version>3.2.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
-        </plugin>
-        <plugin>
-            <groupId>org.wildfly.plugins</groupId>
-            <artifactId>wildfly-maven-plugin</artifactId>
-            <version>2.1.0.Final</version>
-            <configuration>
-                <filename>${project.build.finalName}.war</filename>
-            </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.wildfly.plugins</groupId>
-          <artifactId>wildfly-jar-maven-plugin</artifactId>
-          <version>${bootable.jar.maven.plugin.version}</version>
-          <configuration>
-            <feature-pack-location>org.jboss.eap:wildfly-galleon-pack:${jboss.xp.galleon.feature.pack.version}</feature-pack-location>
-            <layers>
-                <layer>jaxrs-server</layer>
-                <layer>microprofile-platform</layer>
-            </layers>
-            <cloud/>
-          </configuration>
-          <executions>
-              <execution>
-                  <goals>
-                      <goal>package</goal>
-                  </goals>
-              </execution>
-          </executions>
-        </plugin>        
-      </plugins>
-    </pluginManagement>
-  </build>
-
+  <profiles>
+    <profile>
+      <id>standard</id>
+      <build>
+        <finalName>microprofile</finalName>
+        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+          <plugins>
+            <plugin>
+              <artifactId>maven-clean-plugin</artifactId>
+              <version>3.1.0</version>
+            </plugin>
+            <plugin>
+              <artifactId>maven-resources-plugin</artifactId>
+              <version>3.0.2</version>
+            </plugin>
+            <plugin>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>3.8.0</version>
+            </plugin>
+            <plugin>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <version>2.22.1</version>
+            </plugin>
+            <plugin>
+              <artifactId>maven-war-plugin</artifactId>
+              <version>3.2.2</version>
+            </plugin>
+            <plugin>
+              <artifactId>maven-install-plugin</artifactId>
+              <version>2.5.2</version>
+            </plugin>
+            <plugin>
+              <artifactId>maven-deploy-plugin</artifactId>
+              <version>2.8.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>2.1.0.Final</version>
+                <configuration>
+                    <filename>${project.build.finalName}.war</filename>
+                </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>  
+    <profile>
+        <id>openshift</id>
+        <activation>
+            <activeByDefault>true</activeByDefault>
+        </activation>
+        <build>
+            <plugins>
+              <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-jar-maven-plugin</artifactId>
+                <version>${bootable.jar.maven.plugin.version}</version>
+                <configuration>
+                  <feature-pack-location>org.jboss.eap:wildfly-galleon-pack:${jboss.xp.galleon.feature.pack.version}</feature-pack-location>
+                  <layers>
+                      <layer>jaxrs-server</layer>
+                      <layer>microprofile-platform</layer>
+                  </layers>
+                  <cloud/>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+              </plugin>
+              <!-- <plugin>
+                  <groupId>org.eclipse.jkube</groupId>
+                  <artifactId>openshift-maven-plugin</artifactId>
+                  <version>${version.jkube.maven.plugin}</version>
+                  <executions>
+                      <execution>
+                          <goals>
+                              <goal>resource</goal>
+                              <goal>build</goal>
+                          </goals>
+                      </execution>
+                  </executions>
+                  <configuration>
+                      <enricher>
+                          <config>
+                              <jkube-service>
+                                  <type>NodePort</type>
+                              </jkube-service>
+                          </config>
+                      </enricher>
+                  </configuration>
+              </plugin> -->
+          </plugins>
+        </build>
+    </profile>
+  </profiles>
 
   <repositories>
       <!-- maven central repository -->
