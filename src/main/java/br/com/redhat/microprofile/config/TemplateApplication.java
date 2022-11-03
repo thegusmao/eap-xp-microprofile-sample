@@ -1,4 +1,4 @@
-package br.com.redhat.microprofile;
+package br.com.redhat.microprofile.config;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -14,6 +14,6 @@ import org.eclipse.microprofile.openapi.annotations.servers.Server;
         version = "1.0.0"
 ))
 @ApplicationPath("/")
-public class CoffeeApplication extends Application {
+public class TemplateApplication extends Application {
     
 }

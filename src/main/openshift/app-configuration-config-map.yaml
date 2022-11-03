@@ -1,0 +1,10 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app-configuration
+data:
+  POSTGRESQL_DATABASE: services
+  POSTGRESQL_DATASOURCE: ServiceDS
+  POSTGRESQL_PASSWORD: teste
+  POSTGRESQL_URL: 'jdbc:postgresql://postgres:5432/services'
+  POSTGRESQL_USER: teste
